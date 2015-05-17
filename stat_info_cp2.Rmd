@@ -1,0 +1,56 @@
+---
+title: "ToothGrowth by Vitamin C Supplement and Growth"
+author: "JJanzen"
+date: "March 18, 2015"
+output: html_document
+---
+
+For the exercise would like to compare the results of tooth growth based on vitamin C supplement OJ and VC over the doses from 0.5 ml - 2.0 ml.  I will explore using data summaries and charts.  Then, I will leverage the t-test to summarize with confidence intervals.  
+
+```{r}
+# load datasets
+library(datasets)
+data(ToothGrowth)
+attach(ToothGrowth)
+# summarize data
+head(ToothGrowth,10)
+summary(ToothGrowth)
+str(ToothGrowth)
+```
+
+As you can see in the plot below, supplement OJ and VC behaved very similar, but doses had the impact on tooth growth, with very minimul differences between the two.  Therefore, I'll use dose for further analysis. 
+
+```{r}
+library(ggplot2)
+qplot(dose, len, data = ToothGrowth, facets=~supp, main = "Tooth Length by Vitamin C Supplement")
+```
+
+I wanted to break up the data into three groups based on dose, then compare each dose to another to determine significance.  
+```{r}
+# ordered ToothGrowth as there are 20 observations per dose
+order_tooth_growth <- ToothGrowth[with(ToothGrowth,order(dose)),]
+g1 <- ToothGrowth$len[1:20]
+g2 <-ToothGrowth$len[21:40] 
+g3 <- ToothGrowth$len[41:60]
+
+head(order_tooth_growth, 25)
+```
+
+First, I want to look at confidence interval for dose 0.5 to 1.0
+
+```{r}
+t.test(g2, g1, paired = F)
+```
+Next, I want to look at confidence interval for dose 1.0 to 2.0
+
+```{r}
+t.test(g3, g2, paired = F)
+```
+
+Finally, I want to look at confidence interval for the biggest jump of dose 0.5 to 2.0
+
+```{r}
+t.test(g3, g1, paired = F)
+```
+
+It's clear the dosage amount has an impact on tooth growth. In the most extreme example (from 0.5 ml to 2.0 ml), we are 95% confident the mean of the sample will have a range of 9.1 to 14.9 increase in length. 
